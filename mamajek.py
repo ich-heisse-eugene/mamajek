@@ -211,26 +211,26 @@ if __name__ == "__main__":
 
     if args.given == 'V':
         print("The apparent magnitude is given as an input parameter. Computing absolute magnitude(s)... ")
-        print(f"Distance d is {d} pc")
+        print(f"Distance d is {d:.1f} pc")
         args.given = 'Mv'
         values = values + 5 - 5*np.log10(d)
 
     for i in range(nval):
-        print(f"Star #{i+1}: {args.given} = {values[i]:.3f}\t", end='')
+        print(f"Star #{i+1}: {args.given} = {values[i]:.3f} {units[args.given]}")
         for key, val in convers.items():
             if key != args.given:
                 newval, idx = interpolate_in(convers[args.given], val, values[i])
-                print(f"{key} = {newval:.3f} {units[key]}\t", end='')
+                print(f"{key} = {newval:.3f} {units[key]}")
             if args.atdist != None and (args.given == 'Mv' or key == 'Mv'):
                 if args.given == 'Mv':
                     Mv = values[i]
                 elif key == 'Mv':
                     Mv = newval
-                mv = Mv - 5. + 5. * np.log10(d) + Av
-                print(f"V = {mv:.3f} mag (d = {d:.1f} pc, Av = {Av:.4f})\t")
-                if args.binary and nval >= 2 and i <= 1:
-                    mbin[i] = mv
-                    Lbin[i], _ = interpolate_in(convers[args.given], convers['logL'], values[i])
+        mv = Mv - 5. + 5. * np.log10(d) + Av
+        print(f"V = {mv:.3f} mag\t(d = {d:.1f} pc, Av = {Av:.4f} mag)")
+        if args.binary and nval >= 2 and i <= 1:
+            mbin[i] = mv
+            Lbin[i], _ = interpolate_in(convers[args.given], convers['logL'], values[i])
         print(f"SpType: {sptype[idx-1:idx+1]}\n")
 
     if args.binary and nval >= 2:
