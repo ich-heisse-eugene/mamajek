@@ -173,6 +173,7 @@ def interpolate_in(par_prim, par_seg, valor):
 
 if __name__ == "__main__":
     convers = {'Teff': Teff, 'logTeff': logTeff, 'logL': logL, 'Mbol': Mbol, 'R': Rsun, 'Mv': Mv, 'BV': BV, 'M': Msun}
+    units = {'Teff': 'K', 'logTeff': '[K]', 'logL': '[Lsun]', 'Mbol': 'mag', 'R': 'Rsun', 'Mv': 'mag', 'BV': 'mag', 'M': 'Msun'}
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--given", help="Input parameter, one out of [Teff, logTeff, logL, Mbol, R, Mv, BV, M, V]", type=str, default=None)
@@ -202,7 +203,7 @@ if __name__ == "__main__":
         d = 1000. / args.atdist
     else:
         d = args.atdist
-    Av = 3.2 * args.Ebv
+    Av = 3.11 * args.Ebv
 
     if args.binary:
         mbin = np.zeros(2)
@@ -219,14 +220,14 @@ if __name__ == "__main__":
         for key, val in convers.items():
             if key != args.given:
                 newval, idx = interpolate_in(convers[args.given], val, values[i])
-                print(f"{key} = {newval:.3f}\t", end='')
+                print(f"{key} = {newval:.3f} {units[key]}\t", end='')
             if args.atdist != None and (args.given == 'Mv' or key == 'Mv'):
                 if args.given == 'Mv':
                     Mv = values[i]
                 elif key == 'Mv':
                     Mv = newval
                 mv = Mv - 5. + 5. * np.log10(d) + Av
-                print(f"V = {mv:.1f} (d = {d:.0f} pc, Av = {Av:.3f})\t")
+                print(f"V = {mv:.3f} mag (d = {d:.1f} pc, Av = {Av:.4f})\t")
                 if args.binary and nval >= 2 and i <= 1:
                     mbin[i] = mv
                     Lbin[i], _ = interpolate_in(convers[args.given], convers['logL'], values[i])
